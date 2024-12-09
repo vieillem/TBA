@@ -8,8 +8,14 @@ class Player():
     
     # Define the move method.
     def move(self, direction):
+
+        # Vérifier si la sortie est bloquée
+        if direction in self.current_room.blocked_exits:
+            print(f"\nLa sortie vers le {direction} est bloquée. Vous ne pouvez pas y accéder.\n")
+            return False
+
         # Get the next room from the exits dictionary of the current room.
-        next_room = self.current_room.exits[direction]
+        next_room = self.current_room.exits.get(direction)
 
         # If the next room is None, print an error message and return False.
         if next_room is None:

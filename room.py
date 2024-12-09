@@ -7,6 +7,7 @@ class Room:
         self.name = name
         self.description = description
         self.exits = {}
+        self.blocked_exits = []
     
     # Define the get_exit method.
     def get_exit(self, direction):
@@ -14,6 +15,9 @@ class Room:
         # Return the room in the given direction if it exists.
         if direction in self.exits.keys():
             return self.exits[direction]
+        if direction in self.blocked_exits:
+            print("\nCe passage est bloqué. Vous ne pouvez pas passer par là !\n")
+            return None
         else:
             return None
     
@@ -22,7 +26,10 @@ class Room:
         exit_string = "Sorties: " 
         for exit in self.exits.keys():
             if self.exits.get(exit) is not None:
-                exit_string += exit + ", "
+                if exit in self.blocked_exits:
+                    exit_string += f"{exit} (bloqué), "
+                else:
+                    exit_string += exit + ", "
         exit_string = exit_string.strip(", ")
         return exit_string
 

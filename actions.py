@@ -4,8 +4,8 @@
 # Each function takes 3 parameters:
 # - game: the game object
 # - list_of_words: the list of words in the command
-# - number_of_parameters: the number of parameters expected by the command
-# The functions return True if the command was executed successfully, False otherwise.
+# - number_of_parameters: the number of parameters expected by the command hhhh
+# The functions return True if the command was executed successfully, False otherwise. 
 # The functions print an error message if the number of parameters is incorrect.
 # The error message is different depending on the number of parameters expected by the command.
 
@@ -44,7 +44,7 @@ class Actions:
         False
 
         """
-        
+            
         player = game.player
         l = len(list_of_words)
         # If the number of parameters is incorrect, print an error message and return False.
@@ -53,12 +53,28 @@ class Actions:
             print(MSG1.format(command_word=command_word))
             return False
 
+        # Toutes les directions valides
+        directions= {
+            "N": "N", "NORD": "N",
+            "S": "S", "SUD": "S",
+            "E": "E", "EST": "E",
+            "O": "O", "OUEST": "O",
+            "U": "U", "UP": "U",
+            "D": "D", "DOWN": "D",
+            }
         # Get the direction from the list of words.
         direction = list_of_words[1]
-        # Move the player in the direction specified by the parameter.
-        player.move(direction)
-        return True
 
+        #Convertir la direction en majuscule
+        direction = direction.upper()
+        if direction in directions:
+            direction = directions[direction]
+            # Move the player in the direction specified by the parameter.
+            player.move(direction)
+        else:
+            print(f"Direction '{direction}' non reconnue.")
+        return True
+    
     def quit(game, list_of_words, number_of_parameters):
         """
         Quit the game.
