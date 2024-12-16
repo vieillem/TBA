@@ -6,6 +6,7 @@ from room import Room
 from player import Player
 from command import Command
 from actions import Actions
+from item import Item
 
 class Game:
 
@@ -102,6 +103,14 @@ class Game:
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = swamp
 
+        # Exemple : On ajoute un sword dans swamp, un shield dans tower, un helmet dans cottage
+        sword = Item("sword", "une épée au fil tranchant comme un rasoir", 2)
+        shield = Item("shield", "un bouclier léger et résistant", 1)
+        helmet = Item("helmet", "un casque en métal", 1)
+
+        swamp.inventory.append(sword)
+        tower.inventory.append(shield)
+        cottage.inventory.append(helmet)
 
     # Play the game
     def play(self):

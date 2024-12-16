@@ -194,3 +194,91 @@ class Actions:
         if history_msg.strip():
             print(history_msg)
         return True
+
+    def look(game, list_of_words, number_of_parameters):
+        """
+        Affiche la description de la pièce et la liste des items présents
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        current_room = game.player.current_room
+        # Afficher la description de pièce (déjà visible mais on refait pour look)
+        print(current_room.get_long_description())
+        # Afficher la liste des items dans la pièce
+        print(current_room.get_inventory())
+        return True
+
+    # NOUVELLE MÉTHODE : take
+    def take(game, list_of_words, number_of_parameters):
+        """
+        Permet de prendre un item présent dans la pièce et de le mettre dans l'inventaire du joueur.
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        item_name = list_of_words[1]
+        current_room = game.player.current_room
+        # Chercher l'item dans la pièce
+        item_to_take = None
+        for it in current_room.inventory:
+            if it.name == item_name:
+                item_to_take = it
+                break
+        
+        if item_to_take is None:
+            print(f"\nL'objet '{item_name}' n'est pas dans la pièce.\n")
+            return False
+        
+        # Retirer l'item de la pièce et l'ajouter au joueur
+        current_room.inventory.remove(item_to_take)
+        game.player.inventory.append(item_to_take)
+        return True
+
+    # NOUVELLE MÉTHODE : drop
+    def drop(game, list_of_words, number_of_parameters):
+        """
+        Permet de reposer un item de l'inventaire du joueur dans la pièce.
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        item_name = list_of_words[1]
+        # Chercher l'item dans l'inventaire du joueur
+        item_to_drop = None
+        for it in game.player.inventory:
+            if it.name == item_name:
+                item_to_drop = it
+                break
+
+        if item_to_drop is None:
+            print(f"\nL'objet '{item_name}' n'est pas dans l'inventaire'.\n")
+            return False
+
+        # Retirer l'item du joueur et l'ajouter dans la pièce
+        game.player.inventory.remove(item_to_drop)
+        game.player.current_room.inventory.append(item_to_drop)
+        return True
+
+    # NOUVELLE MÉTHODE : check
+    def check(game, list_of_words, number_of_parameters):
+        """
+        Affiche la liste des items dans l'inventaire du joueur.
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        print(game.player.get_inventory())
+        return True
