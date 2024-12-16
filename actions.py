@@ -153,3 +153,44 @@ class Actions:
             print("\t- " + str(command))
         print()
         return True
+
+    def history(game, list_of_words, number_of_parameters):
+        """
+        Affiche l'historique des pièces visitées.
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        # Appel à get_history du joueur
+        history_msg = game.player.get_history()
+        if history_msg.strip():  # Si l'historique n'est pas vide
+            print(history_msg)
+        else:
+            print("\nAucun déplacement effectué pour l'instant.\n")
+        return True
+
+    def back(game, list_of_words, number_of_parameters):
+        """
+        Permet de revenir en arrière dans l'historique des déplacements.
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        # Tente de revenir en arrière
+        success = game.player.back()
+        if not success:
+            print("\nVous ne pouvez pas revenir en arrière, aucun déplacement précédent.\n")
+            return False
+
+        # Si retour réussi, afficher la description de la pièce courante (déjà fait dans back()) 
+        # et afficher l'historique s'il n'est pas vide.
+        history_msg = game.player.get_history()
+        if history_msg.strip():
+            print(history_msg)
+        return True
