@@ -32,6 +32,14 @@ class Game:
         self.commands["history"] = history_cmd
         back_cmd = Command("back", " : revenir en arrière", Actions.back, 0)
         self.commands["back"] = back_cmd
+        look_cmd = Command("look", " : observer la pièce", Actions.look, 0)
+        self.commands["look"] = look_cmd
+        take_cmd = Command("take", " <item> : prendre un objet dans la pièce", Actions.take, 1)
+        self.commands["take"] = take_cmd
+        drop_cmd = Command("drop", " <item> : reposer un objet dans la pièce", Actions.drop, 1)
+        self.commands["drop"] = drop_cmd
+        check_cmd = Command("check", " : vérifier l'inventaire", Actions.check, 0)
+        self.commands["check"] = check_cmd
         
         # Setup rooms
 
