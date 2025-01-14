@@ -9,6 +9,7 @@
 # The functions print an error message if the number of parameters is incorrect.
 # The error message is different depending on the number of parameters expected by the command.
 
+from config import DEBUG
 
 # The error message is stored in the MSG0 and MSG1 variables and formatted with the command_word variable, the first word in the command.
 # The MSG0 variable is used when the command does not take any parameter.
@@ -269,7 +270,7 @@ class Actions:
         game.player.current_room.inventory.append(item_to_drop)
         return True
 
-    # NOUVELLE MÉTHODE : check
+    # MÉTHODE : check
     def check(game, list_of_words, number_of_parameters):
         """
         Affiche la liste des items dans l'inventaire du joueur.
@@ -281,4 +282,35 @@ class Actions:
             return False
 
         print(game.player.get_inventory())
+        return True
+
+    def talk(game, list_of_words, number_of_parameters):
+        """
+        Permet de parler à un PNJ présent dans la pièce.
+        Usage: talk <nomPNJ>
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        npc_name = list_of_words[1]
+        current_room = game.player.current_room
+
+        # Trouver le PNJ dans la liste des personnages du lieu
+        npc_found = None
+        for npc in current_room.characters:
+            if npc.name.lower() == npc_name.lower():
+                npc_found = npc
+                break
+        
+        if not npc_found:
+            print(f"\nIl n'y a pas de personnage nommé '{npc_name}' ici.\n")
+            return False
+
+        # Appeler la méthode get_msg() du PNJ
+        if DEBUG:
+            print(f"DEBUG: PNJ trouvé, exécution de get_msg() pour {npc_found.name}")
+        npc_found.get_msg()
         return True

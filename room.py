@@ -9,6 +9,8 @@ class Room:
         self.exits = {}
         self.blocked_exits = []
         self.inventory = []
+        self.characters = []
+        
     
     # Define the get_exit method.
     def get_exit(self, direction):
@@ -44,4 +46,6 @@ class Room:
         msg = "On voit:\n"
         for item in self.inventory:
             msg += f"    - {str(item)}\n"
+        for npc in self.characters:
+            msg += f"    - {str(npc)}\n"
         return msg

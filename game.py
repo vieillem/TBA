@@ -2,11 +2,15 @@
 
 # Import modules
 
+import random
 from room import Room
 from player import Player
 from command import Command
 from actions import Actions
 from item import Item
+from character import Character
+from config import DEBUG
+
 
 class Game:
 
@@ -40,6 +44,8 @@ class Game:
         self.commands["drop"] = drop_cmd
         check_cmd = Command("check", " : vérifier l'inventaire", Actions.check, 0)
         self.commands["check"] = check_cmd
+        talk_cmd = Command("talk", " <personnage> : parler à un PNJ", Actions.talk, 1)
+        self.commands["talk"] = talk_cmd
         
         # Setup rooms
 
@@ -120,15 +126,26 @@ class Game:
         tower.inventory.append(shield)
         cottage.inventory.append(helmet)
 
+        gandalf = Character("Gandalf", "un magicien blanc", forest, ["Je suis Gandalf", "Abracadabra !"])
+        frodon = Character("Frodon", "un hobbit courageux", swamp, ["Je porte l'anneau.", "La Comté me manque..."])
+
+        forest.characters.append(gandalf)
+        swamp.characters.append(frodon)
+
     # Play the game
     def play(self):
         self.setup()
         self.print_welcome()
         # Loop until the game is finished
         while not self.finished:
-            # Get the command from the player
+            self.move_npcs()
             self.process_command(input("> "))
         return None
+
+    def move_npcs(self):
+        for room in self.rooms:
+            for npc in list(room.characters):
+                npc.move()
 
     # Process the command entered by the player
     def process_command(self, command_string) -> None:
