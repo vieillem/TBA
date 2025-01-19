@@ -80,7 +80,7 @@ class Player:
     def get_inventory(self):
         """
         Retourne une description textuelle des objets que transporte le joueur.
-        Si l'inventaire est vide, renvoie un message spécifique.
+        Si l'inventaire est vide, renvoie un message spécifique
         """
         if not self.inventory:
             return "Votre inventaire est vide."

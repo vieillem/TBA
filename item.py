@@ -10,7 +10,7 @@ avec un nom, une description et un poids.
 class Item:
     """
     Classe Item : décrit un objet du jeu, avec nom, description
-    et poids, destiné à être ramassé ou déposé par le joueur.
+    et poids, destiné à être ramassé ou déposé par le joueur
     """
 
     def __init__(self, name, description, weight):

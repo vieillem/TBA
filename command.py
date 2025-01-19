@@ -30,6 +30,6 @@ class Command:
     def __str__(self):
         """
         Retourne le mot-clé suivi de la chaîne d'aide,
-        pour représenter la commande sous forme de texte.
+        pour représenter la commande sous forme de texte
         """
         return self.command_word + self.help_string

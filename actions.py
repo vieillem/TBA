@@ -85,7 +85,7 @@ class Actions:
 
     @staticmethod
     def history(game, list_of_words, number_of_parameters):
-        """Commande pour afficher l'historique des déplacements du joueur."""
+        """Commande pour afficher l'historique des déplacements du joueur"""
         length_cmd = len(list_of_words)
         if length_cmd != number_of_parameters + 1:
             command_word = list_of_words[0]

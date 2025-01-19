@@ -71,7 +71,7 @@ class Room:
     def get_inventory(self):
         """
         Renvoie une chaîne décrivant le contenu de la salle :
-        items et PNJ présents. Si rien n'est présent, renvoie un message adapté.
+        items et PNJ présents. Si rien n'est présent, renvoie un message adapté
         """
         if not self.inventory and not self.characters:
             return "Il n'y a rien ici."

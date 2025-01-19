@@ -97,7 +97,7 @@ class Game:
         """
         Boucle principale du jeu : on exécute setup,
         on affiche un message de bienvenue, puis on
-        traite les commandes tant que le jeu n'est pas fini.
+        traite les commandes tant que le jeu n'est pas fini
         """
         self.setup()
         self.print_welcome()

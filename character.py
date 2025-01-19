@@ -13,7 +13,7 @@ class Character:
     """
     Classe Character : un personnage non joueur avec nom, description,
     salle actuelle, messages à dire, et un paramètre is_static pour
-    déterminer s'il bouge ou non.
+    déterminer s'il bouge ou non
     """
 
     def __init__(self, name, description, current_room, msgs, is_static=False):
