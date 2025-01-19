@@ -1,7 +1,7 @@
 # TBA
 
 
-Ce repo contient la dernière version du jeu d’aventure "L'oeuf de dragon perdu".
+Ce repo contient la version finale du jeu d’aventure "L'oeuf de dragon perdu".
 
 
 
