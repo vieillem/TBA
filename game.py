@@ -1,184 +1,164 @@
-# Description: Game class
+"""
+Ce fichier game.py définit la classe Game, qui gère
+la configuration du jeu (pièces, objets, PNJ) et
+contient la boucle principale.
+"""
 
-# Import modules
-
-import random
 from room import Room
 from player import Player
 from command import Command
 from actions import Actions
 from item import Item
 from character import Character
-from config import DEBUG
 
 
 class Game:
+    """
+    Classe principale du jeu.
+    Gère la configuration initiale, la boucle de jeu
+    ainsi que l'état (fini ou non).
+    """
 
-    # Constructor
     def __init__(self):
+        """Initialise les attributs du jeu."""
         self.finished = False
         self.rooms = []
         self.commands = {}
         self.player = None
-    
-    # Setup the game
+
     def setup(self):
+        """
+        Configure les commandes, crée les salles, objets et PNJ,
+        puis place le joueur dans son point de départ.
+        """
+        self.commands["help"] = Command("help", " : aide", Actions.help, 0)
+        self.commands["quit"] = Command("quit", " : quitter", Actions.quit, 0)
+        self.commands["go"] = Command("go", " <dir> : se déplacer (N,E,S,O,U,D)", Actions.go, 1)
+        self.commands["history"] = Command("history", " : historique", Actions.history, 0)
+        self.commands["back"] = Command("back", " : retour en arrière", Actions.back, 0)
+        self.commands["look"] = Command("look", " : observer la pièce", Actions.look, 0)
+        self.commands["take"] = Command("take", " <item> : prendre un objet", Actions.take, 1)
+        self.commands["drop"] = Command("drop", " <item> : reposer un objet", Actions.drop, 1)
+        self.commands["check"] = Command("check", " : vérifier l'inventaire", Actions.check, 0)
+        self.commands["talk"] = Command("talk", " <pnj> : parler à un PNJ", Actions.talk, 1)
 
-        # Setup commands
+        village = Room("Village", "dans un village paisible.")
+        foret = Room("Forêt", "une forêt dense.")
+        porte_chateau = Room("Porte du Chateau", "devant la porte en ruine d'un vieux château.")
+        temple = Room("Temple", "dans un temple sacré, empli d'aura mystique.")
+        taniere_dragon = Room("Taniere du Dragon", "une tanière sombre où sommeille un dragon.")
+        lac_lune = Room("Lac de Lune", "au bord d'un lac scintillant, éclairé par la lune.")
+        cimetiere = Room("Cimetière", "un cimetière abandonné, chargé de mystère.")
+        tour_guet = Room("Tour de Guet", "au sommet d'une tour donnant vue sur toute la contrée.")
 
-        help = Command("help", " : afficher cette aide", Actions.help, 0)
-        self.commands["help"] = help
-        quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
-        self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, U, D)", Actions.go, 1)
-        self.commands["go"] = go
-        history_cmd = Command("history", " : afficher l'historique des pièces visitées", Actions.history, 0)
-        self.commands["history"] = history_cmd
-        back_cmd = Command("back", " : revenir en arrière", Actions.back, 0)
-        self.commands["back"] = back_cmd
-        look_cmd = Command("look", " : observer la pièce", Actions.look, 0)
-        self.commands["look"] = look_cmd
-        take_cmd = Command("take", " <item> : prendre un objet dans la pièce", Actions.take, 1)
-        self.commands["take"] = take_cmd
-        drop_cmd = Command("drop", " <item> : reposer un objet dans la pièce", Actions.drop, 1)
-        self.commands["drop"] = drop_cmd
-        check_cmd = Command("check", " : vérifier l'inventaire", Actions.check, 0)
-        self.commands["check"] = check_cmd
-        talk_cmd = Command("talk", " <personnage> : parler à un PNJ", Actions.talk, 1)
-        self.commands["talk"] = talk_cmd
-        
-        # Setup rooms
+        self.rooms = [village, foret, porte_chateau, temple,
+        taniere_dragon, lac_lune, cimetiere, tour_guet]
 
-        forest = Room("Forest", "dans une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
-        self.rooms.append(forest)
-        tower = Room("Tower", "dans une immense tour en pierre qui s'élève au dessus des nuages.")
-        self.rooms.append(tower)
-        cave = Room("Cave", "dans une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
-        self.rooms.append(cave)
-        cottage = Room("Cottage", "dans un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
-        self.rooms.append(cottage)
-        swamp = Room("Swamp", "dans un marécage sombre et ténébreux. L'eau bouillonne, les abords sont vaseux.")
-        self.rooms.append(swamp)
-        castle = Room("Castle", "dans un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
-        self.rooms.append(castle)
-        crystal_cavern = Room("Crystal Cavern", "dans une caverne scintillante où des cristaux magiques illuminent les ténèbres.")
-        sky_garden = Room("Sky Garden", "dans un jardin suspendu flottant entre les nuages.")
-        dragon_lair = Room("Dragon Lair", "dans l'antre d'un dragon, avec des montagnes d'or et de joyaux.")
-        shadow_forest = Room("Shadow Forest", "dans une forêt où les ombres semblent s'animer.")
-        silver_lake = Room("Silver Lake", "au bord d'un lac argenté qui réfléchit un ciel étoilé.")
-        ancient_library = Room("Ancient Library", "dans une bibliothèque ancienne remplie de livres magiques.")
-        obsidian_tower = Room("Obsidian Tower", "dans une tour noire faite d'obsidienne, avec des gravures étranges.")
-        mystic_cavern = Room("Mystic Cavern", "dans une grotte où des runes brillent sur les murs.")
-        enchanted_meadow = Room("Enchanted Meadow", "dans une prairie enchantée où des lucioles dansent dans la lumière.")
-        golden_temple = Room("Golden Temple", "dans un temple étincelant, baigné de lumière dorée.")
-        whispering_cliffs = Room("Whispering Cliffs", "au sommet de falaises où des voix murmurent dans le vent.")
-        frozen_sanctuary = Room("Frozen Sanctuary", "dans un sanctuaire glacé, avec des sculptures de glace.")
-        fiery_depths = Room("Fiery Depths", "dans les profondeurs embrasées d'une montagne volcanique.")
-        celestial_palace = Room("Celestial Palace", "dans un palais céleste avec des colonnes dorées et un plafond étoilé.")
-        abyssal_chasm = Room("Abyssal Chasm", "au bord d'un gouffre abyssal qui semble sans fin.")
-        floating_island = Room("Floating Island", "sur une île flottante entourée de cascades aériennes.")
+        village.exits = {"N": foret}
+        foret.exits = {"S": village, "O": porte_chateau, "N": cimetiere, "E": lac_lune}
+        porte_chateau.exits = {"E": foret, "U": temple, "N": tour_guet}
+        taniere_dragon.exits = {"O": cimetiere}
+        temple.exits = {"D": porte_chateau}
+        lac_lune.exits = {"O": foret}
+        cimetiere.exits = {"S": foret, "E": taniere_dragon}
+        tour_guet.exits = {"S": porte_chateau}
 
-        self.rooms = [forest, tower, cave, cottage, swamp, castle, crystal_cavern, sky_garden, dragon_lair, shadow_forest, silver_lake, ancient_library, obsidian_tower, mystic_cavern, enchanted_meadow, golden_temple, whispering_cliffs, frozen_sanctuary, fiery_depths, celestial_palace, abyssal_chasm, floating_island]
-
-
-        # Create exits for rooms
-
-        forest.exits = {"N" : cave, "E" : tower, "S" : castle, "O" : None, "U" : None, "D" : None}
-        forest.blocked_exits.append("E")  # Bloquer le retour vers la tour
-        tower.exits = {"N" : cottage, "E" : None, "S" : swamp, "O" : forest, "U" : obsidian_tower, "D" : None}
-        cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None, "U" : None, "D" : crystal_cavern}
-        cottage.exits = {"N" : None, "E" : None, "S" : tower, "O" : cave, "U" : ancient_library, "D" : None}
-        swamp.exits = {"N" : tower, "E" : None, "S" : None, "O" : castle, "U" : None, "D" : fiery_depths}
-        castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None, "U" : golden_temple, "D" : None}
-        crystal_cavern.exits = {"N" : None, "E" : None, "S" : None, "O" : None,"U": cave, "D" : None}
-        obsidian_tower.exits = {"D": tower, "N": shadow_forest, "E" : None, "S" : None, "O" : None,"U": None}
-        ancient_library.exits = {"D": cottage, "N" : None, "E" : None, "S" : None, "O" : None,"U": None}
-        fiery_depths.exits = {"U": swamp, "D": None, "N" : None, "E" : None, "S" : None, "O" : None}
-        golden_temple.exits = {"D": castle, "N": celestial_palace, "E" : None, "S" : None, "O" : None,"U": None}
-        celestial_palace.exits = {"S": golden_temple, "E": floating_island, "O" : None,"U": None, "D": None, "N": None}
-        floating_island.exits = {"O": celestial_palace, "N": sky_garden, "D" : None, "U" : None, "E" : None, "S" : None}
-        sky_garden.exits = {"S": floating_island, "U": enchanted_meadow, "D": None, "N" : None, "E" : None, "O" : None}
-        enchanted_meadow.exits = {"D": sky_garden, "E": whispering_cliffs, "O": None, "N" : None, "U" : None, "S" : None}
-        whispering_cliffs.exits = {"O": enchanted_meadow, "D": None, "N" : None, "E" : None, "S" : None, "U" : None}
-        shadow_forest.exits = {"S": obsidian_tower, "E": silver_lake, "D": None, "N" : None, "U" : None, "O" : None}
-        silver_lake.exits = {"O": shadow_forest, "N": dragon_lair, "D": None, "U" : None, "E" : None, "S" : None}
-        dragon_lair.exits = {"S": silver_lake, "D": None, "N" : None, "E" : None, "O" : None, "U": None}
-        frozen_sanctuary.exits = {"D": abyssal_chasm, "O": None, "N" : None, "E" : None, "S" : None, "U": None}
-        abyssal_chasm.exits = {"U": frozen_sanctuary, "D": None, "N" : None, "E" : None, "S" : None, "O": None}
-
-        # Ajouter des passages bloqués
-        
-        swamp.blocked_exits.append("N")  # Nord bloqué depuis le marécage
-        tower.blocked_exits.append("S")  # Sud bloqué depuis la tour
-
-
-        # Setup player and starting room
+        # Blocage unique : porte_chateau -> temple
+        porte_chateau.blocked_exits.append("U")
 
         self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = swamp
+        self.player.current_room = village
 
-        # Exemple : On ajoute un sword dans swamp, un shield dans tower, un helmet dans cottage
-        sword = Item("sword", "une épée au fil tranchant comme un rasoir", 2)
-        shield = Item("shield", "un bouclier léger et résistant", 1)
-        helmet = Item("helmet", "un casque en métal", 1)
+        clef = Item("clef", "une clef rouillée", 1)
+        oeufdragon = Item("oeufdragon", "un œuf légendaire de dragon", 3)
 
-        swamp.inventory.append(sword)
-        tower.inventory.append(shield)
-        cottage.inventory.append(helmet)
+        foret.inventory.append(clef)
+        taniere_dragon.inventory.append(oeufdragon)
 
-        gandalf = Character("Gandalf", "un magicien blanc", forest, ["Je suis Gandalf", "Abracadabra !"])
-        frodon = Character("Frodon", "un hobbit courageux", swamp, ["Je porte l'anneau.", "La Comté me manque..."])
+        chevalier = Character(
+            "Chevalier",
+            "un chevalier en armure, cherchant le Temple",
+            porte_chateau,
+            ["Je dois accéder au Temple, mais il est bloqué..."],
+            is_static=False
+        )
+        mage = Character(
+            "Maitre",
+            "un mage ancien, gardien du Temple",
+            temple,
+            ["Bonjour, le chevalier m'a indiqué d'aller vous parler"],
+            is_static=True
+        )
 
-        forest.characters.append(gandalf)
-        swamp.characters.append(frodon)
+        porte_chateau.characters.append(chevalier)
+        temple.characters.append(mage)
 
-    # Play the game
     def play(self):
+        """
+        Boucle principale du jeu : on exécute setup,
+        on affiche un message de bienvenue, puis on
+        traite les commandes tant que le jeu n'est pas fini.
+        """
         self.setup()
         self.print_welcome()
-        # Loop until the game is finished
         while not self.finished:
-            self.move_npcs()
-            self.process_command(input("> "))
-        return None
+            cmd_ok = self.process_command(input("> "))
+            if cmd_ok:
+                self.move_npcs()
 
     def move_npcs(self):
+        """Fait se déplacer les PNJ non statiques."""
         for room in self.rooms:
             for npc in list(room.characters):
                 npc.move()
 
-    # Process the command entered by the player
-    def process_command(self, command_string) -> None:
-
-        # Ignore empty commands
+    def process_command(self, command_string) -> bool:
+        """Analyse la commande saisie et l'exécute si elle est reconnue."""
         if not command_string.strip():
-            return  # Ne rien faire si la commande est vide
+            return False
 
-        # Split the command string into a list of words
         list_of_words = command_string.split(" ")
-
         command_word = list_of_words[0]
+        if command_word not in self.commands:
+            print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour la liste.\n")
+            return False
 
-        # If the command is not recognized, print an error message
-        if command_word not in self.commands.keys():
-            print(f"\nCommande '{command_word}' non reconnue. Entrez 'help' pour voir la liste des commandes disponibles.\n")
-        # If the command is recognized, execute it
-        else:
-            command = self.commands[command_word]
-            command.action(self, list_of_words, command.number_of_parameters)
+        command = self.commands[command_word]
+        success = command.action(self, list_of_words, command.number_of_parameters)
+        return success
 
-    # Print the welcome message
     def print_welcome(self):
+        """Affiche un message de bienvenue et la description de la pièce de départ."""
         print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")
-        print("Entrez 'help' si vous avez besoin d'aide.")
-        #
+        print("Votre objectif : déposer l'oeuf de dragon au Village.")
+        print("Commencez par parler au Chevalier ('talk chevalier') pour en savoir plus.")
         print(self.player.current_room.get_long_description())
-    
+
+    def unlock_temple(self):
+        """Débloque l'accès Temple depuis PorteChateau quand la clef est prise."""
+        for room in self.rooms:
+            if room.name == "Porte du Chateau":
+                if "U" in room.blocked_exits:
+                    room.blocked_exits.remove("U")
+                    print("\nUn mécanisme se déverrouille : l'accès au Temple est ouvert !\n")
+
+    def check_drop(self, item_name):
+        """Vérifie si on dépose l'oeuf de dragon dans le village => fin du jeu."""
+        if item_name == "oeufdragon":
+            if self.player.current_room.name == "Village":
+                print("\nVous déposez l'oeuf au Village. Bravo, quête accomplie !")
+                self.finished = True
+
+    def check_victory(self):
+        """
+        Appelée après certaines actions pour vérifier
+        si le joueur a gagné (ici géré par check_drop).
+        """
+        return
 
 def main():
-    # Create a game object and play the game
+    """Fonction principale : crée un objet Game puis lance la boucle de jeu."""
     Game().play()
-    
 
 if __name__ == "__main__":
     main()
